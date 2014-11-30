@@ -1,0 +1,139 @@
+LoginScreen:
+ 
+<LoginScreen>:
+    username_box: username_input
+    password_box: password_input
+    remember_me: remember_me
+    status_label: status_label
+    AnchorLayout:
+        anchor_y: 'top'
+        BoxLayout:
+            orientation: 'vertical'
+            height: '240dp'
+            size_hint_y: None
+            Label:
+                id: status_label
+                size_hint_y: None
+                height: '40dp'
+            GridLayout:
+                cols: 2
+                row_default_height: '40dp'
+                row_force_default: True
+                spacing: '10dp'
+                padding: '10dp'
+                Label:
+                    text: 'Username'
+                TextInput:
+                    id: username_input
+                Label:
+                    text: 'Password'
+                TextInput:
+                    id: password_input
+                    password: True
+                Label:
+                    text: 'Remember Me'
+                CheckBox:
+                    id: remember_me
+                    active: False
+            Button:
+                size_hint_y: None
+                height: '40dp'
+                text: 'Login'
+                on_press: root.login()
+
+<MainScreen>:
+    AnchorLayout:
+        anchor_y: 'top'
+        BoxLayout:
+            spacing: '5dp'
+            padding: '5dp'
+            orientation: 'vertical'
+            height: '240dp'
+            size_hint_y: None
+            Button:
+                text: 'New Session'
+                on_press: root.manager.current = 'new_session'
+            Button:
+                text: 'Register New Member'
+                on_press: root.manager.current = 'register_new_member'
+            Button:
+                text: 'Sync'
+                on_press: root.server.sync()
+            Button:
+                text: 'Quit'
+
+<NewSessionScreen>:
+    session_list: session_list.__self__
+    dropdown_button: dropdown_button
+    status_label: status_label
+    AnchorLayout:
+        anchor_y: 'top'
+        BoxLayout:
+            orientation: 'vertical'
+            height: '240dp'
+            size_hint_y: None
+            GridLayout:
+                cols: 2
+                spacing: '5dp'
+                padding: '5dp'
+                row_default_height: '40dp'
+                row_force_default: True
+                height: '240dp'
+                size_hint_y: None
+                Label:
+                    text: 'Session'
+                Button:
+                    id: dropdown_button
+                    text: 'Select Session'
+                    on_release: session_list.open(self)
+                DropDown:
+                    id: session_list
+                    on_parent: self.dismiss()
+                    on_select: root.session_selected(args[1])
+            Label:
+                id: status_label
+                text: 'Select session'
+            ListView:
+                id: attendance_list
+
+
+<RegisterNewMemberScreen>:
+    tag_id: tag_id
+    persian_name: persian_name
+    english_name: english_name
+    status_label: status_label
+    AnchorLayout:
+        anchor_y: 'top'
+        BoxLayout:
+            orientation: 'vertical'
+            height: '300dp'
+            size_hint_y: None
+            GridLayout:
+                cols: 2
+                spacing: '5dp'
+                padding: '5dp'
+                row_default_height: '40dp'
+                row_force_default: True
+                height: '240dp'
+                size_hint_y: None
+                Label:
+                    text: 'Tag ID'
+                TextInput:
+                    id: tag_id
+                    readonly: True
+                    background_color: [.7, .7, .7, 1]
+                Label:
+                    text: 'Name in Persian'
+                TextInput:
+                    id: persian_name
+                Label:
+                    text: 'Name in English'
+                TextInput:
+                    id: english_name
+            Label:
+                id: status_label
+                text: 'Put an RFID tag near to phone'
+            Button:
+                id: register_member
+                text: 'Register'
+                on_press: root.register()

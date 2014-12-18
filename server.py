@@ -6,10 +6,15 @@ from db import Database
 
 
 class Server:
-    def __init__(self, username, password):
+    def __init__(self, username, password, auth_success, auth_failed, *args):
         self.db = Database()
         # sleep(2)
-        self._authenticate(username, password)
+        try:
+            self._authenticate(username, password)
+        except AuthError:
+            auth_failed()
+        else:
+            auth_success()
 
     def _authenticate(self, username, password):
         if username == 'test' and password == 'test':
@@ -35,7 +40,7 @@ class Server:
         members = Database.get_instance().get_members_list()
         if not members or force_refresh:
             members = {
-                1: {'english_name': 'K1', 'persian_name': u'کیوان', 'tag_id': '1'},
+                1: {'name': 'K1', 'persian_name': u'کیوان', 'tag_id': '1'},
                 2: {'english_name': 'Nim4n', 'persian_name': u'نیما', 'tag_id': '2'},
                 3: {'english_name': 'hapal', 'persian_name': u'هپل', 'tag_id': '3'},
                 4: {'english_name': 'itmard', 'persian_name': u'مرد آی‌تی', 'tag_id': '4'},

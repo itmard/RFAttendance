@@ -1,18 +1,56 @@
-import sqlite3
-import os
+from kivy.config import Config
+from peewee import *
+
+from main import RfAttendance
+
+database = None
+
+
+class BaseModel(Model):
+    class Meta:
+        database = database
+
+
+class Auth(BaseModel):
+    username = CharField()
+    password = CharField()
+
+
+class Member(BaseModel):
+    tag_id = CharField(unique=True)
+    name = CharField()
+
+
+class Session(BaseModel):
+    name = CharField()
+    date = DateTimeField()
+
+
+class SessionAttendance(BaseModel):
+    session = ForeignKeyField(Session, 'attendance')
+    member = ForeignKeyField(Member, 'sessions')
+
+    class Meta:
+        primary_key = CompositeKey('session', 'member')
+
+
+if not database:
+    app = RfAttendance.get_running_app()
+    import logging
+    import sys
+    logger = logging.getLogger('peewee')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.StreamHandler(sys.stdout))
+    database = SqliteDatabase(
+        app.load_config().get('General', 'database_file'), journal_mode='WAL'
+    ).create_tables([Auth, Member, Session, SessionAttendance], safe=True)
 
 
 class Database:
-    @classmethod
-    def get_instance(cls):
-        try:
-            return cls.db_instance
-        except AttributeError:
-            cls.db_instance = Database()
-            return cls.db_instance
-
     def __init__(self):
-        self.db = sqlite3.connect('db.sqlite')
+        # from main import RfAttendance
+        # app = RfAttendance.get_running_app()
+        # self.db = sqlite3.connect(join(app.user_data_dir, 'db.sqlite'))
         # Couldn't find a clean way to figure out if db is alreay installed or not
         self._install_db()
 
@@ -32,8 +70,7 @@ class Database:
             columns=[
                 ('id', 'INTEGER'),
                 ('tag_id', 'TEXT UNIQUE'),
-                ('english_name', 'TEXT'),
-                ('persian_name', 'TEXT')
+                ('english_name', 'TEXT')
             ],
             primary_key=['id']
         )
@@ -41,7 +78,7 @@ class Database:
             table_name='sessions',
             columns=[
                 ('session_id', 'INTEGER'),
-                ('session_name', 'TEXT')
+                ('session_name', 'TEXT UNIQUE')
             ],
             primary_key=['session_id']
         )
@@ -97,10 +134,10 @@ class Database:
         for member_id, names in memebers.items():
             try:
                 self.db.execute(
-                    'INSERT INTO members VALUES (?, ?, ?, ?)',
+                    'INSERT INTO members VALUES (?, ?, ?)',
                     (
                         member_id, names['tag_id'],
-                        names['english_name'], names['persian_name']
+                        names['english_name']
                     )
                 )
                 self.db.commit()
@@ -111,16 +148,21 @@ class Database:
         members_list = self.db.execute('SELECT * FROM members').fetchall()
         return self._dict_result('members', members_list)
 
-    def save_sessions(self, sessions):
-        for session_id, session_info in sessions.items():
-            try:
-                self.db.execute(
-                    'INSERT INTO sessions VALUES (?, ?)',
-                    (session_id, session_info['session_name'])
-                )
-                self.db.commit()
-            except sqlite3.IntegrityError:
-                pass            # No duplication
+    def new_session(self, session_name):
+        try:
+            print session_name, tuple(session_name), (session_name,)
+            self.db.execute(
+                'INSERT INTO sessions (session_name) VALUES (:name)', {'name': session_name}
+            )
+            self.db.commit()
+        except sqlite3.IntegrityError:
+            raise DuplicationError
+
+    def get_session(self, session_name):
+        session = self.db.execute(
+            'SELECT * FROM sessions WHERE session_name = :name', {'name': session_name}
+        ).fetchall()
+        return self._dict_result('sessions', session)
 
     def get_sessions_list(self):
         sessions_list = self.db.execute('SELECT * FROM sessions').fetchall()
@@ -136,22 +178,36 @@ class Database:
         except sqlite3.IntegrityError:
             raise DuplicationError
 
-    def register_member(self, tag_id, english_name, persian_name):
+    def get_attendances_list(self, session_id):
+        try:
+            attendance_list = self.db.execute(
+                'SELECT * FROM sessions_attendance WHERE session_id = :id',
+                {'id': session_id}
+            ).fetchall()
+            return self._dict_result('sessions_attendance', attendance_list)
+        except sqlite3.OperationalError:
+            raise NotFoundError
+
+    def register_member(self, tag_id, english_name):
         try:
             self.db.execute(
-                'INSERT INTO members (tag_id, english_name, persian_name) \
-                VALUES (?, ?, ?)',
-                (tag_id, english_name, persian_name)
+                'INSERT INTO members (tag_id, english_name) \
+                VALUES (?, ?)',
+                (tag_id, english_name)
             )
             self.db.commit()
-        except sqlite3.IntegrityError:
-            raise DuplicationError
+        except sqlite3.OperationalError:
+            raise NotFoundError
 
     def get_member(self, field, value):
-        member = self.db.execute(
-            'SELECT * FROM members where {} = {}'.format(field, value)
-        ).fetchall()
-        return self._dict_result('members', member)
+        try:
+            query = 'SELECT * FROM members WHERE {} = "{}"'.format(field, value)
+            member = self.db.execute(
+                query
+            ).fetchall()
+            return self._dict_result('members', member)
+        except sqlite3.OperationalError:
+            raise NotFoundError
 
     def _dict_result(self, table_name, result):
         table_columns = getattr(self, 'table_{}'.format(table_name))
@@ -163,4 +219,8 @@ class Database:
 
 
 class DuplicationError(Exception):
+    pass
+
+
+class NotFoundError(Exception):
     pass

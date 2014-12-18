@@ -1,139 +1,181 @@
-LoginScreen:
- 
-<LoginScreen>:
-    username_box: username_input
-    password_box: password_input
-    remember_me: remember_me
-    status_label: status_label
-    AnchorLayout:
-        anchor_y: 'top'
-        BoxLayout:
-            orientation: 'vertical'
-            height: '240dp'
-            size_hint_y: None
-            Label:
-                id: status_label
-                size_hint_y: None
-                height: '40dp'
-            GridLayout:
-                cols: 2
-                row_default_height: '40dp'
-                row_force_default: True
-                spacing: '10dp'
-                padding: '10dp'
-                Label:
-                    text: 'Username'
-                TextInput:
-                    id: username_input
-                Label:
-                    text: 'Password'
-                TextInput:
-                    id: password_input
-                    password: True
-                Label:
-                    text: 'Remember Me'
-                CheckBox:
-                    id: remember_me
-                    active: False
-            Button:
-                size_hint_y: None
-                height: '40dp'
-                text: 'Login'
-                on_press: root.login()
+#:import RfScreenManager screen_manager.RfScreenManager
+#:import MainScreen screens.main.MainScreen
+#:import NewSessionScreen screens.new_session.NewSessionScreen
+#:import RegisterNewMemberScreen screens.new_member.RegisterNewMemberScreen
+#:import RegisterAttendanceScreen screens.register_attendance.RegisterAttendanceScreen
+#:import ExportScreen screens.export.ExportScreen
+#:import LoginScreen screens.login.LoginScreen
+
+RfScreenManager:
+    MainScreen:
+    NewSessionScreen:
+    RegisterNewMemberScreen:
+    RegisterAttendanceScreen:
+    ExportScreen:
+    LoginScreen:
 
 <MainScreen>:
-    AnchorLayout:
-        anchor_y: 'top'
-        BoxLayout:
+    name: 'main'
+    GridLayout:
+        cols: 1
+        spacing: '5dp'
+        padding: '5dp'
+        Button:
+            text: 'New Session'
+            on_press: app.root.current = 'new_session'
+        Button:
+            text: 'Register New Member'
+            on_press: app.root.current = 'register_new_member'
+        Button:
+            text: 'Export'
+            on_press: app.root.current = 'export'
+        Button:
+            text: 'Sync'
+            on_press: app.root.current = 'login'
+        Button:
+            text: 'Quit'
+            on_press: exit(0)
+ 
+<NewSessionScreen>:
+    name: 'new_session'
+    session_drop_down: session_list.__self__
+    GridLayout:
+        cols: 1
+        spacing: '5dp'
+        padding: '5dp'
+        Label:
+            id: status_label
+            size_hint_y: None
+            height: '44dp'
+            text: 'Enter or select session'
+        GridLayout:
+            cols: 2
             spacing: '5dp'
             padding: '5dp'
-            orientation: 'vertical'
-            height: '240dp'
-            size_hint_y: None
+            row_default_height: '40dp'
+            row_force_default: True
+            ToggleButton:
+                id: new_session_checkbox
+                group: 'session'
+                text: 'Session Name'
+                active: True
+                on_press: root.new_session_checkbox()
+            TextInput:
+                id: new_session_name
+        GridLayout:
+            cols: 2
+            spacing: '5dp'
+            padding: '5dp'
+            row_default_height: '40dp'
+            row_force_default: True
+            ToggleButton:
+                id: added_session_checkbox
+                group: 'session'
+                text: 'Session'
+                on_press: root.added_session_checkbox()
             Button:
-                text: 'New Session'
-                on_press: root.manager.current = 'new_session'
-            Button:
-                text: 'Register New Member'
-                on_press: root.manager.current = 'register_new_member'
-            Button:
-                text: 'Sync'
-                on_press: root.server.sync()
-            Button:
-                text: 'Quit'
+                id: dropdown_button
+                text: 'Select Session'
+                on_release: session_list.open(self)
+            DropDown:
+                id: session_list
+                on_parent: self.dismiss()
+                on_select: root.previously_added_session(args[1])
+        Button:
+            text: 'Register Attendance'
+            on_press: root.register_attendance()
 
-<NewSessionScreen>:
-    session_list: session_list.__self__
-    dropdown_button: dropdown_button
-    status_label: status_label
-    AnchorLayout:
-        anchor_y: 'top'
-        BoxLayout:
-            orientation: 'vertical'
-            height: '240dp'
+<RegisterAttendanceScreen>:
+    name: 'register_attendance'
+    GridLayout:
+        cols: 1
+        spacing: '5dp'
+        padding: '5dp'
+        Label:
+            id: status_label
             size_hint_y: None
-            GridLayout:
-                cols: 2
-                spacing: '5dp'
-                padding: '5dp'
-                row_default_height: '40dp'
-                row_force_default: True
-                height: '240dp'
-                size_hint_y: None
-                Label:
-                    text: 'Session'
-                Button:
-                    id: dropdown_button
-                    text: 'Select Session'
-                    on_release: session_list.open(self)
-                DropDown:
-                    id: session_list
-                    on_parent: self.dismiss()
-                    on_select: root.session_selected(args[1])
-            Label:
-                id: status_label
-                text: 'Select session'
-            ListView:
-                id: attendance_list
-
+            height: '44dp'
+            text: 'Put RFID tag near the phone to recognize attendance'
+        ListView:
+            id: attendance_list
 
 <RegisterNewMemberScreen>:
-    tag_id: tag_id
-    persian_name: persian_name
-    english_name: english_name
-    status_label: status_label
-    AnchorLayout:
-        anchor_y: 'top'
-        BoxLayout:
-            orientation: 'vertical'
-            height: '300dp'
-            size_hint_y: None
-            GridLayout:
-                cols: 2
-                spacing: '5dp'
-                padding: '5dp'
-                row_default_height: '40dp'
-                row_force_default: True
-                height: '240dp'
-                size_hint_y: None
-                Label:
-                    text: 'Tag ID'
-                TextInput:
-                    id: tag_id
-                    readonly: True
-                    background_color: [.7, .7, .7, 1]
-                Label:
-                    text: 'Name in Persian'
-                TextInput:
-                    id: persian_name
-                Label:
-                    text: 'Name in English'
-                TextInput:
-                    id: english_name
+    name: 'register_new_member'
+    GridLayout:
+        cols: 1
+        spacing: '5dp'
+        padding: '5dp'
+        GridLayout:
+            cols: 2
+            spacing: '5dp'
+            padding: '5dp'
+            row_default_height: '40dp'
+            row_force_default: True
             Label:
-                id: status_label
-                text: 'Put an RFID tag near to phone'
-            Button:
-                id: register_member
-                text: 'Register'
-                on_press: root.register()
+                text: 'Tag ID'
+            TextInput:
+                id: tag_id
+                readonly: True
+                background_color: [.8, .8, .8, 1]
+            Label:
+                text: 'Name in English'
+            TextInput:
+                id: name
+        Label:
+            id: status_label
+            text: 'Put an RFID tag near to phone'
+        Button:
+            id: register_member
+            text: 'Register'
+            on_press: root.register()
+
+<ExportScreen>:
+    name: 'export'
+    GridLayout:
+        cols: 1
+        Label:
+            id: status_label
+            size_hint_y: None
+            height: '40dp'
+            text: 'Tap export button'
+        Button:
+            id: export_button
+            text: 'Export'
+            size_hint_y: None
+            height: '40dp'
+            on_press: root.export()
+
+<LoginScreen>:
+    name: 'login'
+    GridLayout:
+        cols: 1
+        Label:
+            id: status_label
+            size_hint_y: None
+            height: '40dp'
+        GridLayout:
+            cols: 2
+            row_default_height: '40dp'
+            row_force_default: True
+            spacing: '10dp'
+            padding: '10dp'
+            Label:
+                text: 'Username'
+            TextInput:
+                id: username_input
+            Label:
+                text: 'Password'
+            TextInput:
+                id: password_input
+                password: True
+            Label:
+                text: 'Remember Me'
+            CheckBox:
+                id: remember_me
+                active: False
+        Button:
+            size_hint_y: None
+            height: '40dp'
+            text: 'Login'
+            on_press: root.login()
+

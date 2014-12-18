@@ -1,7 +1,6 @@
 from time import sleep
 
 from kivy.utils import platform
-from android.runnable import run_on_ui_thread
 
 nfc_instance = None
 

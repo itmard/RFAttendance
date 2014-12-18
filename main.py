@@ -4,9 +4,9 @@ from os import mkdir, remove
 from os.path import join
 
 from kivy.app import App
-from kivy.config import Config
 
 from nfc import nfc_instance
+
 
 class RfAttendance(App):
     def build_config(self, config):
@@ -17,7 +17,7 @@ class RfAttendance(App):
         config.write()
         try:
             mkdir(config.get('General', 'export_dir'))
-            remove(config.get('General', 'database_file'))
+            # remove(config.get('General', 'database_file'))
         except OSError:
             pass
         print 1

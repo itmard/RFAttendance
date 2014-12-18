@@ -12,8 +12,10 @@ class NewSessionScreen(Screen):
         super(NewSessionScreen, self).__init__(*args, **kwargs)
         Window.bind(on_keyboard=self.on_key_down)
 
-    def on_enter(self):
+    def on_pre_enter(self):
         self.new_session_checkbox()
+
+    def on_enter(self):
         self.session_id = None
         for session in Session().select():
             button = Button(
@@ -28,6 +30,7 @@ class NewSessionScreen(Screen):
 
     def on_leave(self):
         self.session_id = None
+        self.ids.new_session_name.text = ''
 
     def on_key_down(self, window, key, *args):
         if key == 27:

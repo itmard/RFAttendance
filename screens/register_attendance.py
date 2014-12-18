@@ -17,6 +17,9 @@ class RegisterAttendanceScreen(Screen):
         super(RegisterAttendanceScreen, self).__init__(*args, **kwargs)
         Window.bind(on_keyboard=self.on_key_down)
 
+    def on_pre_enter(self):
+        self.ids.status_label.text = 'Put RFID tag near the phone to recognize attendance\n'
+
     def on_enter(self):
         self.session_id = self.manager.get_screen('new_session').session_id
         if not self.session_id:
@@ -41,8 +44,8 @@ class RegisterAttendanceScreen(Screen):
             print member, self.session_id
             SessionAttendance.create(session=self.session_id, member=member.id)
         except IntegrityError:
-            self.ids.status_label.text += '\n{} has already registered\n'.format(member.name)
+            self.ids.status_label.text += '{} has already registered\n'.format(member.name)
         except DoesNotExist:
-            self.ids.status_label.text += '\nThere is no member with Tag ID {}\n'.format(tag_id)
+            self.ids.status_label.text += 'There is no member with Tag ID {}\n'.format(tag_id)
         else:
-            self.ids.status_label.text += '\n{} successfully registered\n'.format(member.name)
+            self.ids.status_label.text += '{} successfully registered\n'.format(member.name)

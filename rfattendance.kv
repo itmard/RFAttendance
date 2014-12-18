@@ -95,7 +95,6 @@ RfScreenManager:
             id: status_label
             size_hint_y: None
             height: '44dp'
-            text: 'Put RFID tag near the phone to recognize attendance'
         ListView:
             id: attendance_list
 
@@ -118,12 +117,11 @@ RfScreenManager:
                 readonly: True
                 background_color: [.8, .8, .8, 1]
             Label:
-                text: 'Name in English'
+                text: 'Name'
             TextInput:
                 id: name
         Label:
             id: status_label
-            text: 'Put an RFID tag near to phone'
         Button:
             id: register_member
             text: 'Register'
@@ -137,7 +135,6 @@ RfScreenManager:
             id: status_label
             size_hint_y: None
             height: '40dp'
-            text: 'Tap export button'
         Button:
             id: export_button
             text: 'Export'

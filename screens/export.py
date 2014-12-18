@@ -14,6 +14,9 @@ class ExportScreen(Screen):
         super(ExportScreen, self).__init__(*args, **kwargs)
         Window.bind(on_keyboard=self.on_key_down)
 
+    def on_pre_enter(self):
+        self.ids.status_label.text = 'Tap export button'
+
     def on_key_down(self, window, key, *args):
         if key == 27:
             self.manager.current = 'main'

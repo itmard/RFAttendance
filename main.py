@@ -31,6 +31,7 @@ class RfAttendance(App):
         return True
 
     def on_resume(self):
+        super(RfAttendance, self).on_resume()
         if nfc_instance:
             nfc_instance.nfc_enable_ndef_exchange()
 

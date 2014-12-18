@@ -1,6 +1,7 @@
 from time import sleep
 
 from kivy.utils import platform
+from android.runnable import run_on_ui_thread
 
 nfc_instance = None
 
@@ -21,6 +22,7 @@ class NFC:
         )
         self.on_new_intenting = False
         self.resuming = False
+        self.dispatched = False
         self.nfc_enable_ndef_exchange()
         activity.bind(on_new_intent=self.on_new_intent)
 
@@ -30,6 +32,7 @@ class NFC:
     def remove_action(self, action):
         if self._action == action:
             self._action = None
+            self.nfc_disable_ndef_exchange()
         else:
             raise ValueError('Action isn\' defined')
 
@@ -52,30 +55,46 @@ class NFC:
 
         self.on_new_intenting = False
 
+    # @run_on_ui_thread
     def nfc_enable_ndef_exchange(self):
         if self.on_new_intenting: # let it run, don't bother about initialising to saved
             return
         self.resuming = True
         print 'Resume'
+
         inten = Intent(self.j_context, self.j_context.getClass())
         inten.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-        pen_in = PendingIntent.getActivity(self.j_context, 0, inten, 0)
-        filt = []
-        filt.append(IntentFilter())
-        filt[0].addAction(NfcAdapter.ACTION_TAG_DISCOVERED)
-        filt[0].addCategory(Intent.CATEGORY_DEFAULT)
-        filt[0].addDataType("text/plain")
+        pending_intent = PendingIntent.getActivity(self.j_context, 0, inten, 0)
 
-        self.nfc_adapter.enableForegroundDispatch(self.j_context, pen_in, filt, [[]])
+        intent_filter = IntentFilter()
+        intent_filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED)
+        intent_filter.addCategory(Intent.CATEGORY_DEFAULT)
+        intent_filter.addDataType("text/plain")
+
+        try:
+            if not self.dispatched:
+                self.nfc_adapter.enableForegroundDispatch(
+                    self.j_context,
+                    pending_intent,
+                    [intent_filter],
+                    [[]]
+                )
+        except JavaException as e:
+            print 'Java Error', e
+
+        self.dispatched = True
         self.resuming = False
 
+    # @run_on_ui_thread
     def nfc_disable_ndef_exchange(self):
         self.nfc_adapter.disableForegroundDispatch(self.j_context)
+        self.dispatched = False
 
 
 if platform == 'android' and not nfc_instance:
     from jnius import autoclass
+    from jnius.jnius import JavaException
     from android import activity
 
     NfcAdapter = autoclass('android.nfc.NfcAdapter')

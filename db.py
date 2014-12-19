@@ -3,8 +3,15 @@ from peewee import *
 
 from main import RfAttendance
 
-database = None
-
+app = RfAttendance.get_running_app()
+import logging
+import sys
+logger = logging.getLogger('peewee')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+database = SqliteDatabase(
+    app.load_config().get('General', 'database_file')
+)
 
 class BaseModel(Model):
     class Meta:
@@ -22,7 +29,7 @@ class Member(BaseModel):
 
 
 class Session(BaseModel):
-    name = CharField()
+    name = CharField(unique=True)
     date = DateTimeField()
 
 
@@ -34,16 +41,20 @@ class SessionAttendance(BaseModel):
         primary_key = CompositeKey('session', 'member')
 
 
-if not database:
-    app = RfAttendance.get_running_app()
-    import logging
-    import sys
-    logger = logging.getLogger('peewee')
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler(sys.stdout))
+def create_tables():
     database = SqliteDatabase(
-        app.load_config().get('General', 'database_file'), journal_mode='WAL'
-    ).create_tables([Auth, Member, Session, SessionAttendance], safe=True)
+        app.load_config().get('General', 'database_file')
+    )
+    print app.load_config().get('General', 'database_file')
+    print database.get_autocommit()
+    # database.create_tables([Auth, Member, Session, SessionAttendance])
+    Auth.create_table(fail_silently=True)
+    Member.create_table(fail_silently=True)
+    Session.create_table(fail_silently=True)
+    SessionAttendance.create_table(fail_silently=True)
+    print database.get_tables()
+
+create_tables()
 
 
 class Database:

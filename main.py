@@ -1,23 +1,30 @@
 __version__ = '0.1'
 
-from os import mkdir, remove
+from os import mkdir
 from os.path import join
 
+from kivy.config import Config
 from kivy.app import App
+from kivy.utils import platform
 
 from nfc import nfc_instance
 
 
 class RfAttendance(App):
+    def build(self):
+        if platform != 'android':
+            Config.set('kivy', 'keyboard_mode', 'system')
+            Config.write()
+
     def build_config(self, config):
         config.adddefaultsection('General')
         config.write()
         config.set('General', 'database_file', join(self.user_data_dir, 'db.sqlite'))
         config.set('General', 'export_dir', join(self.user_data_dir, 'exports'))
         config.write()
+
         try:
             mkdir(config.get('General', 'export_dir'))
-            # remove(config.get('General', 'database_file'))
         except OSError:
             pass
         print 1

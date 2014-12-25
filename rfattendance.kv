@@ -1,149 +1,122 @@
-#:import RfScreenManager screen_manager.RfScreenManager
-#:import MainScreen screens.main.MainScreen
-#:import NewSessionScreen screens.new_session.NewSessionScreen
-#:import RegisterNewMemberScreen screens.new_member.RegisterNewMemberScreen
-#:import RegisterAttendanceScreen screens.register_attendance.RegisterAttendanceScreen
-#:import ExportScreen screens.export.ExportScreen
-#:import LoginScreen screens.login.LoginScreen
+#:import ListItemButton kivy.uix.listview.ListItemButton
 
-RfScreenManager:
-    MainScreen:
-    NewSessionScreen:
-    RegisterNewMemberScreen:
-    RegisterAttendanceScreen:
-    ExportScreen:
-    LoginScreen:
+#:import TabPannel tab_panel.TabPannel
+#:import MainTab tabs.main.MainTab
 
-<MainScreen>:
-    name: 'main'
-    GridLayout:
-        cols: 1
-        spacing: '5dp'
-        padding: '5dp'
-        Button:
-            text: 'New Session'
-            on_press: app.root.current = 'new_session'
-        Button:
-            text: 'Register New Member'
-            on_press: app.root.current = 'register_new_member'
-        Button:
-            text: 'Export'
-            on_press: app.root.current = 'export'
-        Button:
-            text: 'Sync'
-            on_press: app.root.current = 'login'
-        Button:
-            text: 'Quit'
-            on_press: exit(0)
+#:import SessionsTab tabs.sessions.SessionsTab
+#:import ListSessions tabs.sessions.ListSessions
+#:import ListAttendance tabs.sessions.ListAttendance
+
+#:import MembersTab tabs.members.MembersTab
+#:import ListMembers tabs.members.ListMembers
+#:import NewMember tabs.members.NewMember
+
+#:import ExportTab tabs.export.ExportTab
+#:import LoginTab tabs.login.LoginTab
+
+TabPannel:
+    do_default_tab: False
+    tab_width: '100dp'
+    SessionsTab:
+    MembersTab:
+    ExportTab:
+    # LoginTab:
  
-<NewSessionScreen>:
-    name: 'new_session'
-    session_drop_down: session_list.__self__
-    GridLayout:
-        cols: 1
-        spacing: '5dp'
-        padding: '5dp'
-        Label:
-            id: status_label
-            size_hint_y: None
-            height: '44dp'
-            text: 'Enter or select session'
-        GridLayout:
-            cols: 2
-            spacing: '5dp'
-            padding: '5dp'
-            row_default_height: '40dp'
-            row_force_default: True
-            ToggleButton:
-                id: new_session_checkbox
-                group: 'session'
-                text: 'Session Name'
-                active: True
-                on_press: root.new_session_checkbox()
-            TextInput:
-                id: new_session_name
-        GridLayout:
-            cols: 2
-            spacing: '5dp'
-            padding: '5dp'
-            row_default_height: '40dp'
-            row_force_default: True
-            ToggleButton:
-                id: added_session_checkbox
-                group: 'session'
-                text: 'Session'
-                on_press: root.added_session_checkbox()
-            Button:
-                id: dropdown_button
-                text: 'Select Session'
-                on_release: session_list.open(self)
-            DropDown:
-                id: session_list
-                on_parent: self.dismiss()
-                on_select: root.previously_added_session(args[1])
-        Button:
-            text: 'Register Attendance'
-            on_press: root.register_attendance()
 
-<RegisterAttendanceScreen>:
-    name: 'register_attendance'
-    GridLayout:
-        cols: 1
-        spacing: '5dp'
-        padding: '5dp'
-        Label:
-            id: status_label
-            size_hint_y: None
-            height: '44dp'
+<SessionsTab>:
+    text: 'Sessions'
+    SessionsScreenManager:
+        ListSessions:
+        ListAttendance:
+    
+
+<ListSessions>:
+    name: 'list_sessions'
+    BoxLayout:
+        orientation: 'vertical'
+        ListView:
+            id: session_list
+        AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint_y: 0.15
+            BoxLayout:
+                TextInput:
+                    id: session_name
+                Button:
+                    text: 'Create'
+                    on_press: root.create_new_session()
+                    size_hint_x: 0.3
+
+
+<ListAttendance>:
+    name: 'list_attendance'
+    BoxLayout:
+        orientation: 'vertical'
         ListView:
             id: attendance_list
 
-<RegisterNewMemberScreen>:
-    name: 'register_new_member'
-    GridLayout:
-        cols: 1
-        spacing: '5dp'
-        padding: '5dp'
-        GridLayout:
-            cols: 2
+
+<MembersTab>:
+    text: 'Members'
+    MembersScreenManager:
+        ListMembers:
+        NewMember:
+
+<ListMembers>:
+    name: 'list_members'
+    BoxLayout:
+        orientation: 'vertical'
+        ListView:
+            id: member_list
+        AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint_y: 0.15
+            Button:
+                text: 'New Member'
+                on_press: root.new_member()
+
+
+<NewMember>:
+    name: 'new_member'
+    BoxLayout:
+        orientation: 'vertical'
+        GridLayout:       
+            cols: 2       
             spacing: '5dp'
             padding: '5dp'
             row_default_height: '40dp'
             row_force_default: True
-            Label:
+            Label:        
                 text: 'Tag ID'
-            TextInput:
+            TextInput:    
                 id: tag_id
                 readonly: True
                 background_color: [.8, .8, .8, 1]
-            Label:
+            Label:        
                 text: 'Name'
-            TextInput:
-                id: name
-        Label:
-            id: status_label
+            TextInput:    
+                id: name  
         Button:
+            size_hint_y: 0.15
             id: register_member
             text: 'Register'
             on_press: root.register()
 
-<ExportScreen>:
-    name: 'export'
-    GridLayout:
-        cols: 1
-        Label:
-            id: status_label
-            size_hint_y: None
-            height: '40dp'
-        Button:
-            id: export_button
-            text: 'Export'
-            size_hint_y: None
-            height: '40dp'
-            on_press: root.export()
+<ExportTab>:
+    text: 'Export'
+    BoxLayout:
+        orientation: 'vertical'
+        ListView:
+            id: exported_list
+        AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint_y: 0.15
+            Button:
+                text: 'Export'
+                on_press: root.export()
 
-<LoginScreen>:
-    name: 'login'
+<LoginTab>:
+    text: 'Login'
     GridLayout:
         cols: 1
         Label:

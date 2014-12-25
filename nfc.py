@@ -1,5 +1,7 @@
+from random import randint, choice
 from time import sleep
 
+from kivy.clock import Clock
 from kivy.utils import platform
 
 nfc_instance = None
@@ -33,7 +35,8 @@ class NFC:
             self._action = None
             self.nfc_disable_ndef_exchange()
         else:
-            raise ValueError('Action isn\' defined')
+            # raise ValueError('Action isn\' defined')
+            print 'Action isn\' defined'
 
     def on_new_intent(self, intent):
         self.on_new_intenting = True
@@ -91,6 +94,31 @@ class NFC:
         self.dispatched = False
 
 
+class FakeNFC:
+    def __init__(self):
+        self._action = None
+
+    def register_action(self, action):
+        self._action = action
+        Clock.schedule_once(self.on_new_intent, 0)
+
+    def remove_action(self, action):
+        if self._action == action:
+            self._action = None
+            Clock.unschedule(self.on_new_intent)
+        else:
+            # raise ValueError('Action isn\' defined')
+            print 'Action isn\' defined'
+
+    def on_new_intent(self, *args):
+        tag_id = ''.join([chr(randint(65, 90)) for i in range(6)])
+        tag_id = choice(['xllpoj', 'aymoqf'])
+
+        if self._action:
+            self._action(tag_id.lower())
+            Clock.schedule_interval(self.on_new_intent, 10)
+
+
 if platform == 'android' and not nfc_instance:
     from jnius import autoclass
     from jnius.jnius import JavaException
@@ -103,3 +131,6 @@ if platform == 'android' and not nfc_instance:
     PendingIntent = autoclass('android.app.PendingIntent')
 
     nfc_instance = NFC()
+
+elif not nfc_instance:
+    nfc_instance = FakeNFC()

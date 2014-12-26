@@ -1,0 +1,35 @@
+<LoginTab>:
+    text: 'Login'
+    GridLayout:
+        cols: 1
+        Label:
+            id: status_label
+            size_hint_y: None
+            height: '40dp'
+        GridLayout:
+            cols: 2
+            row_default_height: '40dp'
+            row_force_default: True
+            spacing: '10dp'
+            padding: '10dp'
+            Label:
+                text: 'Username'
+            TextInput:
+                id: username_input
+                multiline: False
+            Label:
+                text: 'Password'
+            TextInput:
+                id: password_input
+                multiline: False
+                password: True
+            Label:
+                text: 'Remember Me'
+            CheckBox:
+                id: remember_me
+                active: False
+        Button:
+            size_hint_y: None
+            height: '40dp'
+            text: 'Login'
+            on_press: root.login()

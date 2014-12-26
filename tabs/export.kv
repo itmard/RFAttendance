@@ -1,0 +1,12 @@
+<ExportTab>:
+    text: 'Export'
+    BoxLayout:
+        orientation: 'vertical'
+        ListView:
+            id: exported_list
+        AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint_y: 0.05
+            Button:
+                text: 'Export'
+                on_press: root.export()

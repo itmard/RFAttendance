@@ -13,7 +13,9 @@ from toast import toast
 
 
 class MembersTab(TabbedPanelItem):
-    pass
+    def on_touch_down(self, *largs):
+        self.content.current = 'list_members'
+        super(TabbedPanelItem, self).on_touch_down(*largs)
 
 
 class MembersScreenManager(ScreenManager):

@@ -6,6 +6,7 @@ from os.path import join
 from kivy.config import Config
 from kivy.app import App
 from kivy.utils import platform
+from kivy.core.window import Window
 
 from nfc import nfc_instance
 
@@ -15,6 +16,8 @@ class RfAttendance(App):
         if platform != 'android':
             Config.set('kivy', 'keyboard_mode', 'system')
             Config.write()
+        else:
+            Window.softinput_mode = 'resize'
 
     def build_config(self, config):
         config.adddefaultsection('General')
@@ -27,7 +30,6 @@ class RfAttendance(App):
             mkdir(config.get('General', 'export_dir'))
         except OSError:
             pass
-        print 1
 
         return config
 

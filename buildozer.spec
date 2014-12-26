@@ -39,7 +39,7 @@ requirements = kivy, sqlite3, peewee
 #garden_requirements =
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/resources/imgs/loading.png
 
 # (str) Icon of the application
 #icon.filename = %(source.dir)s/data/icon.png

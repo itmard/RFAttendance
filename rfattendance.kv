@@ -10,6 +10,7 @@
 #:import MembersTab tabs.members.MembersTab
 #:import ListMembers tabs.members.ListMembers
 #:import NewMember tabs.members.NewMember
+#:import ViewMember tabs.members.ViewMember
 
 #:import ExportTab tabs.export.ExportTab
 #:import LoginTab tabs.login.LoginTab
@@ -63,6 +64,8 @@ TabPannel:
     MembersScreenManager:
         ListMembers:
         NewMember:
+        ViewMember:
+
 
 <ListMembers>:
     name: 'list_members'
@@ -106,6 +109,15 @@ TabPannel:
             id: register_member
             text: 'Register'
             on_press: root.register()
+
+
+<ViewMember>:
+    name: 'view_member'
+    BoxLayout:
+        orientation: 'vertical'
+        ListView:
+            id: session_list
+
 
 <ExportTab>:
     text: 'Export'

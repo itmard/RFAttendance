@@ -9,6 +9,7 @@ from kivy.uix.tabbedpanel import TabbedPanelItem
 
 from db import Session, IntegrityError, SessionAttendance, Member, DoesNotExist
 from nfc import nfc_instance
+from toast import toast
 
 
 class SessionsTab(TabbedPanelItem):
@@ -82,9 +83,9 @@ class ListSessions(Screen):
                 )
                 self.ids.session_list.adapter.data.append(session)
             else:
-                print 'Session name can\'t be empty'
+                toast('Session name can\'t be empty')
         except IntegrityError:
-            print 'Session already created'
+            toast('Session already created')
 
 
 class ListAttendance(Screen):
@@ -94,6 +95,10 @@ class ListAttendance(Screen):
             nfc_instance.register_action(self.attendance_registered)
         Clock.schedule_once(self.update_interface, -1)
         Window.bind(on_keyboard=self.on_key_down)
+
+    def on_enter(self, *args, **kwargs):
+        super(ListAttendance, self).on_enter(*args, **kwargs)
+        toast('Put RFID tag near to phone', True)
 
     def on_key_down(self, window, key, *args):
         if key == 27:
@@ -138,13 +143,12 @@ class ListAttendance(Screen):
         }
 
     def delete_attendace(self, attendance):
-        # from IPython import embed; embed()
         try:
             SessionAttendance.select().where(
                 SessionAttendance.member == attendance.id
             ).get().delete_instance()
         except DoesNotExist:
-            print 'Member does not exist'
+            toast('Member does not exist')
         self.ids.attendance_list.adapter.data.remove(attendance)
 
     def attendance_registered(self, tag_id, *args):
@@ -152,9 +156,9 @@ class ListAttendance(Screen):
             attendance = Member.get(Member.tag_id == tag_id)
             SessionAttendance.create(session=self.session_id, member=attendance.id)
         except IntegrityError:
-            print '{} has already registered\n'.format(attendance.name)
+            toast('{} has already registered'.format(attendance.name))
         except DoesNotExist:
-            print 'There is no member with Tag ID {}\n'.format(tag_id)
+            toast('There is no member with Tag ID {}'.format(tag_id))
         else:
-            print '{} successfully registered\n'.format(attendance.name)
             self.ids.attendance_list.adapter.data.append(attendance)
+            toast('{} successfully registered'.format(attendance.name))

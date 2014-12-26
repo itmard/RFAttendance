@@ -1,14 +1,8 @@
-from functools import partial
-
 from kivy.uix.tabbedpanel import TabbedPanelItem
-from kivy.utils import platform
 
 from db import Member, SessionAttendance, DoesNotExist, IntegrityError
 from nfc import nfc_instance
-
-
-if platform == 'android':
-    from android import activity
+from toast import toast
 
 
 class RegisterAttendanceTab(TabbedPanelItem):
@@ -31,11 +25,11 @@ class RegisterAttendanceTab(TabbedPanelItem):
     def attendance_registered(self, tag_id, *args):
         try:
             member = Member.get(Member.tag_id == tag_id)
-            print member, self.session_id
+            toast(member, self.session_id)
             SessionAttendance.create(session=self.session_id, member=member.id)
         except IntegrityError:
-            self.ids.status_label.text += '{} has already registered\n'.format(member.name)
+            toast('{} has already registered\n'.format(member.name))
         except DoesNotExist:
-            self.ids.status_label.text += 'There is no member with Tag ID {}\n'.format(tag_id)
+            toast('There is no member with Tag ID {}\n'.format(tag_id))
         else:
-            self.ids.status_label.text += '{} successfully registered\n'.format(member.name)
+            toast('{} successfully registered\n'.format(member.name))

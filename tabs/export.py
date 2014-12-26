@@ -11,7 +11,7 @@ from kivy.clock import Clock
 from playhouse.csv_loader import dump_csv, load_csv
 
 from db import Session, Member, SessionAttendance, IntegrityError
-
+from toast import toast
 
 class ExportTab(TabbedPanelItem):
     def __init__(self, *args, **kwargs):
@@ -70,7 +70,7 @@ class ExportTab(TabbedPanelItem):
 
         if not (exists(join(import_dir, 'sessions.csv')) and
                 exists(join(import_dir, 'members.csv'))):
-            print 'Invalid backup'
+            toast('Invalid backup')
             return
 
         try:
@@ -80,24 +80,24 @@ class ExportTab(TabbedPanelItem):
                 Session.date
             ])
         except IntegrityError:
-            print 'Sessions already imported'
+            toast('Sessions already imported')
         else:
-            print 'Sessions Successfully imported'
+            toast('Sessions Successfully imported')
 
         try:
             load_csv(Member, join(import_dir, 'members.csv'))
         except IntegrityError:
-            print 'Member already imported'
+            toast('Member already imported')
         else:
-            print 'Member Successfully imported'
+            toast('Member Successfully imported')
 
         try:
             for session in glob(join(import_dir, 'session_*.csv')):
                 load_csv(SessionAttendance, join(import_dir, session))
         except IntegrityError:
-            print 'Sessions Attendance already imported'
+            toast('Sessions Attendance already imported')
         else:
-            print 'Sessions Attendance Successfully imported'
+            toast('Sessions Attendance Successfully imported')
 
     def export(self):
         export_dir = join(
@@ -125,5 +125,5 @@ class ExportTab(TabbedPanelItem):
                 )
             )
 
-        print 'Successfully exported to \n{}'.format(export_dir)
+        toast('Successfully exported to \n{}'.format(export_dir))
         self.update_interface()

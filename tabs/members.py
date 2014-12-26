@@ -9,6 +9,7 @@ from kivy.uix.tabbedpanel import TabbedPanelItem
 
 from db import Member, IntegrityError, Session, SessionAttendance, DoesNotExist
 from nfc import nfc_instance
+from toast import toast
 
 
 class MembersTab(TabbedPanelItem):
@@ -73,12 +74,19 @@ class ListMembers(Screen):
         self.selected_member_id = member_id
         self.manager.current = 'view_member'
 
+    def new_member(self):
+        self.manager.current = 'new_member'
+
 
 class NewMember(Screen):
     def on_enter(self):
         Window.bind(on_keyboard=self.on_key_down)
         if nfc_instance:
             nfc_instance.register_action(self.update_tag_id)
+
+    def on_enter(self, *args, **kwargs):
+        super(NewMember, self).on_enter(*args, **kwargs)
+        toast('Put RFID tag near to phone', True)
 
     def on_key_down(self, window, key, *args):
         if key == 27:
@@ -100,11 +108,11 @@ class NewMember(Screen):
 
     def register(self):
         if not self.ids.tag_id.text:
-            print 'You can\'t register without a RFID tag'
+            toast('You can\'t register without a RFID tag')
             return
 
         if not self.ids.member_name.text:
-            print 'Please enter your name'
+            toast('Enter member name')
             return
 
         try:
@@ -113,11 +121,11 @@ class NewMember(Screen):
                 name=self.ids.member_name.text
             ).save()
         except IntegrityError:
-            print 'Member is already registered'
+            toast('Member is already registered')
         else:
-            print '{} successfully registered'.format(
+            toast('{} successfully registered'.format(
                 self.ids.member_name.text
-            )
+            ))
 
         self.clean_widgets()
         self.manager.current = 'list_members'
@@ -180,5 +188,5 @@ class ViewMember(Screen):
                 SessionAttendance.session == session.id
             ).get().delete_instance()
         except DoesNotExist:
-            print 'Session does not exist'
+            toast('Session does not exist')
         self.ids.session_list.adapter.data.remove(session)

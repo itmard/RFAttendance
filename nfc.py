@@ -4,6 +4,9 @@ from time import sleep
 from kivy.clock import Clock
 from kivy.utils import platform
 
+from toast import toast
+
+
 nfc_instance = None
 
 
@@ -36,7 +39,7 @@ class NFC:
             self.nfc_disable_ndef_exchange()
         else:
             # raise ValueError('Action isn\' defined')
-            print 'Action isn\' defined'
+            toast('Action isn\' defined')
 
     def on_new_intent(self, intent):
         self.on_new_intenting = True
@@ -45,7 +48,7 @@ class NFC:
             sleep(0.1)
 
         if intent.getAction() != NfcAdapter.ACTION_TAG_DISCOVERED:
-            print 'unknow action, avoid.'
+            toast('unknow action, avoid.')
             return
 
         tag_id = ''
@@ -108,7 +111,7 @@ class FakeNFC:
             Clock.unschedule(self.on_new_intent)
         else:
             # raise ValueError('Action isn\' defined')
-            print 'Action isn\' defined'
+            toast('Action isn\' defined')
 
     def on_new_intent(self, *args):
         tag_id = ''.join([chr(randint(65, 90)) for i in range(6)])

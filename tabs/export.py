@@ -22,8 +22,7 @@ class ExportTab(TabbedPanelItem):
         self.ids.exported_list.adapter = ListAdapter(
             data=self.get_exported(),
             args_converter=self.arg_converter,
-            selection_mode='single',
-            allow_empty_selection=False,
+            selection_mode='none',
             cls=CompositeListItem
         )
 

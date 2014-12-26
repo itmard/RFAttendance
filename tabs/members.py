@@ -25,8 +25,7 @@ class ListMembers(Screen):
         self.ids.member_list.adapter = ListAdapter(
             data=Member.select(),
             args_converter=self.arg_converter,
-            selection_mode='single',
-            allow_empty_selection=False,
+            selection_mode='none',
             cls=CompositeListItem
         )
         self.ids.member_list.adapter.bind(data=self.member_data_changed)
@@ -91,7 +90,7 @@ class NewMember(Screen):
 
     def clean_widgets(self):
         self.ids.tag_id.text = ''
-        self.ids.name.text = ''
+        self.ids.member_name.text = ''
 
     def update_tag_id(self, tag_id, *args):
         self.ids.tag_id.text = str(tag_id)
@@ -101,20 +100,20 @@ class NewMember(Screen):
             print 'You can\'t register without a RFID tag'
             return
 
-        if not self.ids.name.text:
+        if not self.ids.member_name.text:
             print 'Please enter your name'
             return
 
         try:
             Member(
                 tag_id=self.ids.tag_id.text,
-                name=self.ids.name.text
+                name=self.ids.member_name.text
             ).save()
         except IntegrityError:
             print 'Member is already registered'
         else:
             print '{} successfully registered'.format(
-                self.ids.name.text
+                self.ids.member_name.text
             )
 
         self.clean_widgets()

@@ -27,8 +27,7 @@ class ListSessions(Screen):
         self.ids.session_list.adapter = ListAdapter(
             data=Session.select(),
             args_converter=self.arg_converter,
-            selection_mode='single',
-            allow_empty_selection=False,
+            selection_mode='none',
             cls=CompositeListItem
         )
         self.ids.session_list.adapter.bind(data=self.session_data_changed)
@@ -112,8 +111,7 @@ class ListAttendance(Screen):
                 SessionAttendance, Member, Session
             ).join(SessionAttendance).join(Session).where(SessionAttendance.session == self.session_id),
             args_converter=self.arg_converter,
-            selection_mode='single',
-            allow_empty_selection=False,
+            selection_mode='none',
             cls=CompositeListItem
         )
         self.ids.attendance_list.adapter.bind(data=self.attendance_data_changed)

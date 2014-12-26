@@ -13,7 +13,7 @@
             id: member_list
         AnchorLayout:
             anchor_y: 'bottom'
-            size_hint_y: 0.05
+            size_hint_y: 0.1
             Button:
                 text: 'New Member'
                 on_press: root.new_member()
@@ -42,7 +42,7 @@
                 multiline: False
                 on_text_validate: root.register()
         Button:
-            size_hint_y: 0.05
+            size_hint_y: 0.1
             id: register_member
             text: 'Register'
             on_press: root.register()

@@ -5,8 +5,6 @@ from kivy.clock import Clock
 from kivy.uix.tabbedpanel import TabbedPanelItem
 from kivy.core.window import Window
 
-from server import Server
-
 
 class LoginTab(TabbedPanelItem):
     def __init__(self, *args, **kwargs):

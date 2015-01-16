@@ -9,6 +9,7 @@ from kivy.utils import platform
 from kivy.core.window import Window
 
 from nfc import nfc_instance, nfc_init
+from db import create_tables, log_queries, create_instance
 
 
 class RfAttendance(App):
@@ -43,5 +44,7 @@ class RfAttendance(App):
 
 if __name__ == '__main__':
     nfc_init()
-    RfAttendance().run()
+    app = RfAttendance()
 
+    create_instance(app.load_config().get('General', 'database_file'))
+    app.run()

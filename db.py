@@ -1,22 +1,14 @@
-from peewee import CompositeKey, ForeignKeyField, CharField, DateTimeField
-from peewee import SqliteDatabase, IntegrityError, DoesNotExist, fn, Model
-
-from main import RfAttendance
-
-app = RfAttendance.get_running_app()
 import logging
 import sys
-logger = logging.getLogger('peewee')
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-database = SqliteDatabase(
-    app.load_config().get('General', 'database_file')
-)
+from peewee import CompositeKey, ForeignKeyField, CharField, DateTimeField, Proxy
+from peewee import SqliteDatabase, IntegrityError, DoesNotExist, fn, Model
+
+database_proxy = Proxy()
 
 
 class BaseModel(Model):
     class Meta:
-        database = database
+        database = database_proxy
 
 
 class Auth(BaseModel):
@@ -42,14 +34,22 @@ class SessionAttendance(BaseModel):
         primary_key = CompositeKey('session', 'member')
 
 
-def create_tables():
-    database = SqliteDatabase(
-        app.load_config().get('General', 'database_file')
-    )
+def create_instance(db_file):
+    global database_proxy
+    database = SqliteDatabase(db_file)
+    database_proxy.initialize(database)
+    create_tables()
+    log_queries()
 
+
+def create_tables():
     Auth.create_table(fail_silently=True)
     Member.create_table(fail_silently=True)
     Session.create_table(fail_silently=True)
     SessionAttendance.create_table(fail_silently=True)
 
-create_tables()
+
+def log_queries():
+    logger = logging.getLogger('peewee')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.StreamHandler(sys.stdout))

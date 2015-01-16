@@ -15,6 +15,7 @@ from toast import toast
 class MembersTab(TabbedPanelItem):
     def on_touch_down(self, *largs):
         self.content.current = 'list_members'
+        self.content.current_screen.update_interface()
         super(TabbedPanelItem, self).on_touch_down(*largs)
 
 

@@ -78,15 +78,16 @@ class ListSessions(Screen):
         self.manager.current = 'list_attendance'
 
     def create_new_session(self):
+        if not self.ids.session_name.text:
+            toast('Session name can\'t be empty')
+            return
+
         try:
-            if self.ids.session_name.text:
-                session = Session.create(
-                    name=self.ids.session_name.text,
-                    date=datetime.now()
-                )
-                self.ids.session_list.adapter.data.append(session)
-            else:
-                toast('Session name can\'t be empty')
+            session = Session.create(
+                name=self.ids.session_name.text,
+                date=datetime.now()
+            )
+            self.ids.session_list.adapter.data.append(session)
         except IntegrityError:
             toast('Session already created')
 
@@ -150,7 +151,8 @@ class ListAttendance(Screen):
             ).get().delete_instance()
         except DoesNotExist:
             toast('Member does not exist')
-        self.ids.attendance_list.adapter.data.remove(attendance)
+        else:
+            self.ids.attendance_list.adapter.data.remove(attendance)
 
     def attendance_registered(self, tag_id, *args):
         try:

@@ -188,4 +188,5 @@ class ViewMember(Screen):
             ).get().delete_instance()
         except DoesNotExist:
             toast('Session does not exist')
-        self.ids.session_list.adapter.data.remove(session)
+        else:
+            self.ids.session_list.adapter.data.remove(session)

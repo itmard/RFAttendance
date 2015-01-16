@@ -10,8 +10,9 @@ from kivy.uix.listview import ListItemButton, ListItemLabel, CompositeListItem
 from kivy.clock import Clock
 from playhouse.csv_loader import dump_csv, load_csv
 
-from db import Session, Member, SessionAttendance, IntegrityError
+from db import Session, Member, SessionAttendance, IntegrityError, database_proxy
 from toast import toast
+
 
 class ExportTab(TabbedPanelItem):
     def __init__(self, *args, **kwargs):
@@ -74,30 +75,19 @@ class ExportTab(TabbedPanelItem):
             return
 
         try:
-            load_csv(Session, join(import_dir, 'sessions.csv'), [
-                Session.id,
-                Session.name,
-                Session.date
-            ])
+            with database_proxy.atomic():
+                load_csv(Session, join(import_dir, 'sessions.csv'), [
+                    Session.id,
+                    Session.name,
+                    Session.date
+                ])
+                load_csv(Member, join(import_dir, 'members.csv'))
+                for session in glob(join(import_dir, 'session_*.csv')):
+                    load_csv(SessionAttendance, join(import_dir, session))
         except IntegrityError:
-            toast('Sessions already imported')
+            toast('Data already imported, canceling')
         else:
-            toast('Sessions Successfully imported')
-
-        try:
-            load_csv(Member, join(import_dir, 'members.csv'))
-        except IntegrityError:
-            toast('Member already imported')
-        else:
-            toast('Member Successfully imported')
-
-        try:
-            for session in glob(join(import_dir, 'session_*.csv')):
-                load_csv(SessionAttendance, join(import_dir, session))
-        except IntegrityError:
-            toast('Sessions Attendance already imported')
-        else:
-            toast('Sessions Attendance Successfully imported')
+            toast('Data Successfully imported')
 
     def export(self):
         export_dir = join(

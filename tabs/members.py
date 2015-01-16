@@ -85,8 +85,7 @@ class NewMember(Screen):
         super(NewMember, self).on_enter(*args, **kwargs)
         toast('Put RFID tag near to phone', True)
         Window.bind(on_keyboard=self.on_key_down)
-        if nfc_instance:
-            nfc_instance.register_action(self.update_tag_id)
+        nfc_instance.register_action(self.update_tag_id)
 
     def on_key_down(self, window, key, *args):
         if key == 27:
@@ -96,8 +95,7 @@ class NewMember(Screen):
     def on_leave(self):
         Window.unbind(on_keyboard=self.on_key_down)
         self.clean_widgets()
-        if nfc_instance:
-            nfc_instance.remove_action(self.update_tag_id)
+        nfc_instance.remove_action(self.update_tag_id)
 
     def clean_widgets(self):
         self.ids.tag_id.text = ''

@@ -8,7 +8,7 @@ from kivy.app import App
 from kivy.utils import platform
 from kivy.core.window import Window
 
-from nfc import nfc_instance
+from nfc import nfc_instance, nfc_init
 
 
 class RfAttendance(App):
@@ -34,15 +34,14 @@ class RfAttendance(App):
         return config
 
     def on_pause(self):
-        print 'Pause'
-        if nfc_instance:
-            nfc_instance.nfc_disable_ndef_exchange()
+        nfc_instance.nfc_disable_ndef_exchange()
         return True
 
     def on_resume(self):
         super(RfAttendance, self).on_resume()
-        if nfc_instance:
-            nfc_instance.nfc_enable_ndef_exchange()
+        nfc_instance.nfc_enable_ndef_exchange()
 
 if __name__ == '__main__':
+    nfc_init()
     RfAttendance().run()
+

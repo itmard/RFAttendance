@@ -122,18 +122,19 @@ class FakeNFC:
             Clock.schedule_interval(self.on_new_intent, 10)
 
 
-if platform == 'android' and not nfc_instance:
-    from jnius import autoclass
-    from jnius.jnius import JavaException
-    from android import activity
+def nfc_init():
+    global nfc_instance
+    if platform == 'android':
+        from jnius import autoclass
+        from jnius.jnius import JavaException
+        from android import activity
 
-    NfcAdapter = autoclass('android.nfc.NfcAdapter')
-    PythonActivity = autoclass('org.renpy.android.PythonActivity')
-    Intent = autoclass('android.content.Intent')
-    IntentFilter = autoclass('android.content.IntentFilter')
-    PendingIntent = autoclass('android.app.PendingIntent')
+        NfcAdapter = autoclass('android.nfc.NfcAdapter')
+        PythonActivity = autoclass('org.renpy.android.PythonActivity')
+        Intent = autoclass('android.content.Intent')
+        IntentFilter = autoclass('android.content.IntentFilter')
+        PendingIntent = autoclass('android.app.PendingIntent')
 
-    nfc_instance = NFC()
-
-elif not nfc_instance:
-    nfc_instance = FakeNFC()
+        nfc_instance = NFC()
+    else:
+        nfc_instance = FakeNFC()

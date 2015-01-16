@@ -93,8 +93,7 @@ class ListSessions(Screen):
 class ListAttendance(Screen):
     def on_pre_enter(self):
         self.session_id = self.manager.get_screen('list_sessions').selected_session_id
-        if nfc_instance:
-            nfc_instance.register_action(self.attendance_registered)
+        nfc_instance.register_action(self.attendance_registered)
         Clock.schedule_once(self.update_interface, -1)
         Window.bind(on_keyboard=self.on_key_down)
 
@@ -109,8 +108,7 @@ class ListAttendance(Screen):
 
     def on_leave(self):
         Window.unbind(on_keyboard=self.on_key_down)
-        if nfc_instance:
-            nfc_instance.remove_action(self.attendance_registered)
+        nfc_instance.remove_action(self.attendance_registered)
 
     def update_interface(self, *args):
         self.ids.attendance_list.adapter = ListAdapter(

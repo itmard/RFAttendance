@@ -6,7 +6,6 @@ from kivy.utils import platform
 
 from toast import toast
 
-
 nfc_instance = None
 
 
@@ -122,8 +121,7 @@ class FakeNFC:
             Clock.schedule_interval(self.on_new_intent, 10)
 
 
-def nfc_init():
-    global nfc_instance
+if not nfc_instance:
     if platform == 'android':
         from jnius import autoclass
         from jnius.jnius import JavaException

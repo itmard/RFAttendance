@@ -8,8 +8,8 @@ from kivy.app import App
 from kivy.utils import platform
 from kivy.core.window import Window
 
-from nfc import nfc_instance, nfc_init
-from db import create_tables, log_queries, create_instance
+from nfc import nfc_instance
+from db import create_instance
 
 
 class RfAttendance(App):
@@ -43,7 +43,6 @@ class RfAttendance(App):
         nfc_instance.nfc_enable_ndef_exchange()
 
 if __name__ == '__main__':
-    nfc_init()
     app = RfAttendance()
 
     create_instance(app.load_config().get('General', 'database_file'))

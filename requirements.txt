@@ -1,0 +1,4 @@
+buildozer==0.17.dev0
+Kivy==1.9.0.dev0
+peewee==2.4.4
+

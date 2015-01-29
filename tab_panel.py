@@ -39,9 +39,9 @@ class TabPannel(TabbedPanel):
 
         g2 = self.gdb.find(g, minscore=0.70)
         if g2 and g2[1] == self.left_to_right_gesture:
-            self.switch_to_right()
-        elif g2 and g2[1] == self.right_to_left_gesture:
             self.switch_to_left()
+        elif g2 and g2[1] == self.right_to_left_gesture:
+            self.switch_to_right()
 
         return super(TabPannel, self).on_touch_up(touch)
 

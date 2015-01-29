@@ -12,19 +12,19 @@
 #:import ViewMember tabs.members.ViewMember
 
 #:import ExportTab tabs.export.ExportTab
-#:import LoginTab tabs.login.LoginTab
+#:import AboutTab tabs.about.AboutTab
 
 #:include tabs/sessions.kv
 #:include tabs/members.kv
 #:include tabs/export.kv
-#:include tabs/login.kv
+#:include tabs/about.kv
 
 TabPannel:
     do_default_tab: False
-    tab_width: '100dp'
+    tab_width: '80dp'
     SessionsTab:
     MembersTab:
     ExportTab:
-    # LoginTab:
+    AboutTab:
  
 

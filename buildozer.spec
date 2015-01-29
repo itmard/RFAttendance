@@ -42,7 +42,7 @@ requirements = kivy==master, sqlite3, peewee
 presplash.filename = %(source.dir)s/resources/imgs/loading.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/resources/icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait

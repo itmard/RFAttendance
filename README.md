@@ -38,6 +38,10 @@ Screenshot
 ![](screenshots/members.png)
 ![](screenshots/about.png)
 
+Thanks
+======
+* [Fatemeh Tarashi](https://twitter.com/FatemehTarashi) for creating [splash screen](https://github.com/tehpug/RFAttendance/blob/master/resources/imgs/loading.png)
+* Saber Rastikerdar for creating [icon](https://github.com/tehpug/RFAttendance/blob/master/resources/icon.png)
 
 Licenses
 ==========
